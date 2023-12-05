@@ -7,15 +7,15 @@ inst = rm.open_resource(b2902a_1)
 # print(inst.query("*IDN?"))
 
 # Spot measurement
-inst.write("*RST")
-inst.write("*CLS")
-inst.write(":sour1:func:mode volt")
+# inst.write("*RST")
+# inst.write("*CLS")
+# inst.write(":sour1:func:mode volt")
 # inst.write(":sour2:func:mode curr")
-inst.write(":sens1:curr:rang:auto on")
+# inst.write(":sens1:curr:rang:auto on")
 # inst.write(":sens2.volt:rang:auto on")
-inst.write("outp1 on")
+# inst.write("outp1 on")
 # inst.write("outp2 on")
-inst.write(":sour1:volt 20")
+# inst.write(":sour1:volt 20")
 
 
 
@@ -42,25 +42,35 @@ inst.write(":sour1:volt 20")
 #         break
 
 # Задание постоянного напряжения
-log_file = open("log_file.txt", "w", encoding="utf-8")
-log_file.write("Время Напряжение\t Ток\n")
-a = time()
-count = 3
+def const_voltage_ch1(voltage, current, count, file_name):
+    # Spot measurement
+    inst.write("*RST")
+    inst.write("*CLS")
+    inst.write(f":sour1:func:mode {voltage}")
+    # inst.write(":sour2:func:mode curr")
+    inst.write(f":sens1:curr:rang:prot {current}")
+    # inst.write(":sens2.volt:rang:auto on")
+    inst.write("outp1 on")
+    # inst.write("outp2 on")
+    inst.write(":sour1:volt 20")
+    log_file = open(f"{file_name}", "w", encoding="utf-8")
+    log_file.write("Время Напряжение\t Ток\n")
+    a = time()
 
-print("Напряжение" + "\t" + "Ток")
-for i in range(1, count):
-    obj = {"Время": time() - a,
-       "Напряжение":inst.query("meas:volt? (@1)").strip(),
-       "Ток":inst.query("meas:curr? (@1)").strip()}
-    print(obj["Напряжение"] + "\t" +
-          obj["Ток"])
-    
-    log_file.write(f'{obj["Время"]:.4}, {obj["Напряжение"]}, {obj["Ток"]} \n')
-    sleep(1.00)
+    print("Напряжение" + "\t" + "Ток")
+    for i in range(1, count):
+        obj = {"Время": time() - a,
+        "Напряжение":inst.query("meas:volt? (@1)").strip(),
+        "Ток":inst.query("meas:curr? (@1)").strip()}
+        print(obj["Напряжение"] + "\t" +
+            obj["Ток"])
+        
+        log_file.write(f'{obj["Время"]:.4}, {obj["Напряжение"]}, {obj["Ток"]} \n')
+        sleep(1.00)
 
 
-inst.write("outp1 off")
-# inst.write("outp2 off")
-log_file.close()
-# print(voltage)
-# print(current)
+    inst.write("outp1 off")
+    # inst.write("outp2 off")
+    log_file.close()
+    # print(voltage)
+    # print(current)
