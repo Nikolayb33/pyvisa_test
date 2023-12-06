@@ -55,8 +55,9 @@ def const_voltage_ch1(voltage, current, count, file_name):
     inst.write("*CLS")
     inst.write(":sour1:func:mode volt")
     # inst.write(":sour2:func:mode curr")
-    inst.write(f":sens1:curr:rang:auto off") 
-    inst.write(f":sens1:curr:rang:lim {current}") # не задается предел по току
+    # inst.write(":sens1:curr:nplc 1")
+    inst.write(f":sens1:curr:prot {current}")
+    # inst.write(f":sens1:curr:lev ") # не задается предел по току
     # inst.write(":sens2.volt:rang:auto on")
     inst.write("outp1 on")
     # inst.write("outp2 on")
@@ -85,6 +86,8 @@ def const_voltage_ch1(voltage, current, count, file_name):
 
 
 if __name__ == "__main__":
-    arg = sys.argv[1:] # срезом убираем название скрипта
+    # arg = sys.argv[1:] # срезом убираем название скрипта
     # print(arg)
-    const_voltage_ch1(*arg) # распаковываем все аргументы в функцию
+    # from sys import argv
+    # const_voltage_ch1(argv) # распаковываем все аргументы в функцию
+    const_voltage_ch1(5, 0.000001, 5, "log_file_2.txt")
