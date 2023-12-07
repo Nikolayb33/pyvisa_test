@@ -1,6 +1,10 @@
 import sys
 from pyvisa import ResourceManager
 from time import sleep, time
+import pandas as pd 
+import seaborn as sns
+import matplotlib.pyplot as plt
+
 # rm = ResourceManager()
 # print(rm.list_resources())
 # b2902a_1 = rm.list_resources()[0]
@@ -44,6 +48,7 @@ from time import sleep, time
 
 # Задание постоянного напряжения
 def const_voltage_ch1(voltage, current, count, file_name):
+    # определение прибора
     rm = ResourceManager()
     print(rm.list_resources())
     b2902a_1 = rm.list_resources()[0]
@@ -53,17 +58,17 @@ def const_voltage_ch1(voltage, current, count, file_name):
 
     inst.write("*RST")
     inst.write("*CLS")
-    inst.write(":sour1:func:mode volt")
+    inst.write(":sour1:func:mode volt") # выбираем режим (задаем напряжение)
     # inst.write(":sour2:func:mode curr")
     # inst.write(":sens1:curr:nplc 1")
-    inst.write(f":sens1:curr:prot {current}")
+    inst.write(f":sens1:curr:prot {current}") # задаем предел по току
     # inst.write(f":sens1:curr:lev ") # не задается предел по току
     # inst.write(":sens2.volt:rang:auto on")
     inst.write("outp1 on")
     # inst.write("outp2 on")
     inst.write(f":sour1:volt {voltage}")
     log_file = open(f"{file_name}", "w", encoding="utf-8")
-    log_file.write("Время Напряжение\t Ток\n")
+    log_file.write("Время_с,Напряжение_В,Ток_А\n")
     a = time()
 
     print("Напряжение" + "\t" + "Ток")
@@ -83,11 +88,21 @@ def const_voltage_ch1(voltage, current, count, file_name):
     log_file.close()
     # print(voltage)
     # print(current)
+    # для построение графиков из логов
+
+
+def plot_from_log(log_file):
+        df = pd.read_csv(log_file)
+        sns.relplot(x="Время_с", y="Ток_А", kind="line", data =df)
+        return plt.show()
 
 
 if __name__ == "__main__":
     # arg = sys.argv[1:] # срезом убираем название скрипта
+    
     # print(arg)
     # from sys import argv
     # const_voltage_ch1(argv) # распаковываем все аргументы в функцию
-    const_voltage_ch1(5, 0.000001, 5, "log_file_2.txt")
+    # const_voltage_ch1(5, 0.000001, 5, "log_file_2.csv")
+    plot_from_log("log_file_2.csv")
+    
